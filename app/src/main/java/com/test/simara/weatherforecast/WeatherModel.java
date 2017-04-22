@@ -1,5 +1,6 @@
 package com.test.simara.weatherforecast;
 
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class WeatherModel {
     private String humidity;
     private int id;
     private String icon;
+    private URL iconUrl;
     private String lastUpdated;
 
     public String getCity() {
@@ -70,6 +72,14 @@ public class WeatherModel {
         this.humidity = humidity;
     }
 
+    public URL getIconUrl() {
+        return iconUrl;
+    }
+
+    public void setIconUrl(URL iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
     public String getIcon() {
         return icon;
     }
@@ -100,7 +110,7 @@ public class WeatherModel {
         this.date = date;
     }
 
-     public int getId() {
+    public int getId() {
         return id;
     }
 
