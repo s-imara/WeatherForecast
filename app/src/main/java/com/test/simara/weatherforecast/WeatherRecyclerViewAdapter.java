@@ -39,10 +39,9 @@ public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecy
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.txtViewTemp.setText(models.get(position).getTemperature());
+        viewHolder.txtViewTemp.setText(Utils.getTemperatureInC(models.get(position).getTemperature()));
         new ImageLoadTask( models.get(position).getIconUrl(),viewHolder.imgViewIcon).execute();
-        DateFormat dateStyle = DateFormat.getDateInstance();
-        viewHolder.txtViewDate.setText(dateStyle.format(models.get(position).getDate()));
+        viewHolder.txtViewDate.setText(Utils.dateToString(models.get(position).getDate()));
     }
 
     // inner class to hold a reference to each item of RecyclerView

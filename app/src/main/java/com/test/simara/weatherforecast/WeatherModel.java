@@ -14,14 +14,14 @@ public class WeatherModel {
     private String city;
     private String country;
     private Date date;
-    private String temperature;
+    private int temperature;
     private String description;
     private String pressure;
     private String humidity;
     private int id;
     private String icon;
     private URL iconUrl;
-    private String lastUpdated;
+    private Date lastUpdated;
 
     public String getCity() {
         return city;
@@ -39,11 +39,11 @@ public class WeatherModel {
         this.country = country;
     }
 
-    public String getTemperature() {
+    public int getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(String temperature) {
+    public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
 
@@ -118,11 +118,11 @@ public class WeatherModel {
         this.id = id;
     }
 
-    public void setLastUpdated(String lastUpdated) {
+    public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 
-    public String getLastUpdated() {
+    public Date getLastUpdated() {
         return lastUpdated;
     }
 }

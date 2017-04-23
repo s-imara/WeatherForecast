@@ -3,6 +3,8 @@ package com.test.simara.weatherforecast;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -56,11 +58,33 @@ public class WeatherFragment extends Fragment {
         updateWeatherData(new LocationPreference(getActivity()).getCity());
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateWeatherData(new LocationPreference(getActivity()).getCity());
+    }
+
     private void updateWeatherData(final String city) {
+
         new Thread() {
             public void run() {
-                final ArrayList<WeatherModel> weatherModel = RemoteDataManager.getInstance().getFilledModel(getActivity(), city);
-                if (weatherModel == null) {
+                final ArrayList<WeatherModel> weatherModels;
+                DatabaseManager manager =((MainActivity)getActivity()).getDatabaseManager();
+                if(isOnline()) {
+                   weatherModels = RemoteDataManager.getInstance().getFilledModel(getActivity(), city);
+                    if(manager != null) {
+                        manager.addDataToDatabase(weatherModels);
+                    }
+                }
+                else {
+                    if(manager != null) {
+                        weatherModels = manager.getDataFromDb();
+                    }
+                    else {
+                        weatherModels = null;
+                    }
+                }
+                if (weatherModels == null || weatherModels.size() == 0) {
                     handler.post(new Runnable() {
                         public void run() {
                             Toast.makeText(getActivity(),
@@ -71,44 +95,32 @@ public class WeatherFragment extends Fragment {
                 } else {
                     handler.post(new Runnable() {
                         public void run() {
-                            renderWeather(weatherModel);
+                            renderWeather(weatherModels.get(0));
+                            ((MainActivity)getActivity()).setDataAdapter(weatherModels);
                         }
                     });
                 }
             }
         }.start();
     }
-
-    private void renderWeather(ArrayList<WeatherModel> weatherModelList) {
-
-        WeatherModel currentModel = weatherModelList.get(0);
-        cityField.setText(currentModel.getCity() + ", " + currentModel.getCountry());
-        DateFormat dateStyle = DateFormat.getDateTimeInstance();
-        dateField.setText(dateStyle.format(currentModel.getDate()));
-        detailsField.setText(currentModel.getDescription() +
-                "\n" + "Humidity: " + currentModel.getHumidity() +
-                "\n" + "Pressure: " + currentModel.getPressure());
-
-        currentTemperatureField.setText(currentModel.getTemperature());
-        updatedField.setText("Last update: " + currentModel.getLastUpdated());
-        weatherIcon.setText(currentModel.getIcon());
-        ((MainActivity)getActivity()).setDataAdapter(weatherModelList);
-    }
     public void renderWeather(WeatherModel model) {
         cityField.setText(model.getCity() + ", " + model.getCountry());
-        DateFormat dateStyle = DateFormat.getDateTimeInstance();
-        dateField.setText(dateStyle.format(model.getDate()));
+        dateField.setText(Utils.dateToString(model.getDate()));
         detailsField.setText(model.getDescription() +
                 "\n" + "Humidity: " + model.getHumidity() +
                 "\n" + "Pressure: " + model.getPressure());
-
-        currentTemperatureField.setText(model.getTemperature());
+        currentTemperatureField.setText(Utils.getTemperatureInC(model.getTemperature()));
         updatedField.setText("Last update: " + model.getLastUpdated());
-       String icon = model.getIcon();
         weatherIcon.setText(model.getIcon());
     }
 
     public void changeCity(String city) {
         updateWeatherData(city);
+    }
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }

@@ -84,9 +84,8 @@ public class RemoteDataManager {
                 String description = details.getString("description").toUpperCase(Locale.US);
                 String humidity = main.getString("humidity") + "%";
                 String pressure = main.getString("pressure") + " hPa";
-                int temperature = (int) Math.round(main.getDouble("temp")) - 273;
-                DateFormat df = DateFormat.getDateTimeInstance();
-                String lastUpdateDate = df.format(new Date().getTime());
+                int temperature = (int) Math.round(main.getDouble("temp"));
+                Date lastUpdateDate = new Date(new Date().getTime());
                 String forecastDate = weatherArray.getJSONObject(i).getString("dt_txt");
                 int actualId = details.getInt("id");
                 URL iconUrl = new URL(String.format(ICON_URL, details.getString("icon")));
@@ -100,7 +99,7 @@ public class RemoteDataManager {
                 model.setId(actualId);
                 setWeatherIcon(context, actualId, model);
                 model.setIconUrl(iconUrl);
-                model.setTemperature(String.valueOf(temperature) + " ℃");
+                model.setTemperature(temperature);
                 weatherList.add(model);
             }
         } catch (Exception e) {

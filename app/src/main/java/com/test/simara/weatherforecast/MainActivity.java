@@ -20,7 +20,7 @@ package com.test.simara.weatherforecast;
         import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
-
+    DatabaseManager databaseManager = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new WeatherFragment())
                     .commit();
         }
-
+        databaseManager = new DatabaseManager(this);
     }
 
     public void setDataAdapter(final ArrayList<WeatherModel> models) {
@@ -84,6 +84,9 @@ public class MainActivity extends ActionBarActivity {
 
     public WeatherFragment getWeatherFragment() {
         return (WeatherFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+    }
+    public DatabaseManager getDatabaseManager(){
+        return databaseManager;
     }
 }
 
