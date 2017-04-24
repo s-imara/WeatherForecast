@@ -2,6 +2,7 @@ package com.test.simara.weatherforecast;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,8 +17,11 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ModelChangeListener {
+
     DatabaseManager databaseManager = null;
+    WeatherRecyclerViewAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +34,14 @@ public class MainActivity extends ActionBarActivity {
         databaseManager = new DatabaseManager(this);
     }
 
-    public void setDataAdapter(final ArrayList<WeatherModel> models) {
-        WeatherRecyclerViewAdapter adapter = new WeatherRecyclerViewAdapter(models);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        initRecyclerViewAdapter();
+    }
+
+    private void initRecyclerViewAdapter() {
+        adapter = new WeatherRecyclerViewAdapter();
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setAdapter(adapter);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -39,8 +49,9 @@ public class MainActivity extends ActionBarActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
-        RemoteDataManager.getInstance().setAdapter(adapter);
-        adapter.updateAdapter(models);
+        WeatherFragment fragment = (WeatherFragment) getSupportFragmentManager().findFragmentById(R.id.container);
+        fragment.setModelChangeListener(this);
+        RemoteDataManager.getInstance().setModelChangeListener(this);
     }
 
     @Override
@@ -84,8 +95,16 @@ public class MainActivity extends ActionBarActivity {
     public WeatherFragment getWeatherFragment() {
         return (WeatherFragment) getSupportFragmentManager().findFragmentById(R.id.container);
     }
-    public DatabaseManager getDatabaseManager(){
+
+    public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    @Override
+    public void onDataChanged(ArrayList<WeatherModel> models) {
+        if(adapter != null) {
+            adapter.updateData(MainActivity.this, models);
+        }
     }
 }
 

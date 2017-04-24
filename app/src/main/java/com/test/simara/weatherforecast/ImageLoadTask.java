@@ -14,9 +14,7 @@ import java.net.HttpURLConnection;
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
 private WeatherModel model;
-    private  WeatherRecyclerViewAdapter adapter;
-    public ImageLoadTask(WeatherModel model, WeatherRecyclerViewAdapter adapter) {
-        this.adapter = adapter;
+    public ImageLoadTask(WeatherModel model) {
         this.model = model;
     }
 
@@ -41,8 +39,6 @@ private WeatherModel model;
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
-        if(adapter != null)
-        adapter.updateAdapter(model);
     }
 
 }

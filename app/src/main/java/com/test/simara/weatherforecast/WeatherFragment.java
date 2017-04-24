@@ -1,23 +1,19 @@
 package com.test.simara.weatherforecast;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by Simara on 21.04.2017.
@@ -32,6 +28,7 @@ public class WeatherFragment extends Fragment {
     private TextView dateField;
     private TextView weatherIcon;
     private Handler handler;
+    private ModelChangeListener listener;
 
     public WeatherFragment() {
         handler = new Handler();
@@ -93,7 +90,8 @@ public class WeatherFragment extends Fragment {
                     handler.post(new Runnable() {
                         public void run() {
                             renderWeather(weatherModels.get(0));
-                            ((MainActivity)getActivity()).setDataAdapter(weatherModels);
+                            if(listener != null)
+                            listener.onDataChanged(weatherModels);
                         }
                     });
                 }
@@ -119,5 +117,8 @@ public class WeatherFragment extends Fragment {
                 (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+    public void setModelChangeListener(ModelChangeListener listener){
+        this.listener = listener;
     }
 }

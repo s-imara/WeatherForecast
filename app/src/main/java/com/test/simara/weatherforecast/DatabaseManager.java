@@ -1,5 +1,4 @@
 package com.test.simara.weatherforecast;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,6 +16,8 @@ import java.util.Date;
  */
 
 public class DatabaseManager {
+
+    private static final String TAG = DatabaseManager.class.getCanonicalName();
     private static String DB_NAME = "weather_database.db";
     private static String DB_PATH = "";
     private static String ACTUAL_ID = "actualid";
@@ -85,12 +86,12 @@ public class DatabaseManager {
                     db.insertOrThrow(tableName, null, values);
                 }
                 catch (SQLiteConstraintException ex){
-                    Log.e("DatabaseManager", ex.getMessage());
+                    Log.d(TAG, ex.getMessage());
                     db.insertWithOnConflict(tableName, null, values,SQLiteDatabase.CONFLICT_REPLACE);
                 }
 
                 catch (SQLException ex) {
-                    Log.e("DatabaseManager", ex.getMessage());
+                    Log.e(TAG, ex.getMessage());
                 }
             }
         }

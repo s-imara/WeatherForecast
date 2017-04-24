@@ -20,15 +20,14 @@ import java.util.TimerTask;
 /**
  * Created by Simara on 21.04.2017.
  */
-
 public class RemoteDataManager {
 
     private static RemoteDataManager instance;
     private Context context;
     private ArrayList<WeatherModel> weatherList;
     private ArrayList<ImageLoadTask> imageLoadTasks = null;
-    private WeatherRecyclerViewAdapter adapter;
     private Timer timer;
+    private static ModelChangeListener listener;
 
     public static RemoteDataManager getInstance() {
         if (instance != null) {
@@ -110,7 +109,7 @@ public class RemoteDataManager {
                 setWeatherIcon(context, actualId, model);
                 model.setIconUrl(iconUrl);
                 model.setTemperature(temperature);
-                ImageLoadTask task = new ImageLoadTask(model, adapter);
+                ImageLoadTask task = new ImageLoadTask(model);
                 task.execute();
                 imageLoadTasks.add(task);
                 weatherList.add(model);
@@ -158,13 +157,16 @@ public class RemoteDataManager {
 
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
-                int unfinishedTasks = 0;
+                int unfinishedTasks = imageLoadTasks.size();
                 for (ImageLoadTask task : imageLoadTasks) {
-                    if (!(task.getStatus() == AsyncTask.Status.FINISHED)) {
-                        unfinishedTasks++;
+                    if (task.getStatus() == AsyncTask.Status.FINISHED) {
+                        unfinishedTasks--;
                     }
                 }
                 if (unfinishedTasks == 0) {
+                    if(listener != null){
+                        listener.onDataChanged(weatherList);
+                    }
                     DatabaseManager manager = ((MainActivity) context).getDatabaseManager();
                     if (manager != null) {
                         manager.addDataToDatabase(weatherList);
@@ -175,9 +177,8 @@ public class RemoteDataManager {
             }
         }, delay, period);
     }
-
-    public void setAdapter(WeatherRecyclerViewAdapter adapter) {
-        this.adapter = adapter;
+    public void setModelChangeListener(ModelChangeListener listener){
+        this.listener = listener;
     }
 }
 
