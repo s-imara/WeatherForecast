@@ -15,34 +15,32 @@ import java.net.URL;
 
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
-    private URL url;
-    private ImageView imageView;
-
-    public ImageLoadTask(URL url, ImageView imageView) {
-        this.url = url;
-        this.imageView = imageView;
+private WeatherModel model;
+    public ImageLoadTask(WeatherModel model) {
+        this.model = model;
     }
 
     @Override
     protected Bitmap doInBackground(Void... params) {
+        Bitmap iconFromSite = null;
         try {
-            HttpURLConnection connection = (HttpURLConnection) url
-                    .openConnection();
+            HttpURLConnection connection = (HttpURLConnection) model.getIconUrl().openConnection();
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            iconFromSite = BitmapFactory.decodeStream(input);
+            model.setIconFromSite(iconFromSite);
+            return iconFromSite;
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return null;
+            iconFromSite = model.getIconFromSite();
+         }
+        return iconFromSite;
     }
 
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
-        imageView.setImageBitmap(result);
     }
 
 }

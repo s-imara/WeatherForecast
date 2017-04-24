@@ -1,6 +1,6 @@
 package com.test.simara.weatherforecast;
-
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,18 +10,22 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Simara on 21.04.2017.
  */
 
 public class RemoteDataManager {
+
     private static RemoteDataManager instance;
+    private Context context;
+    private ArrayList<WeatherModel> weatherList = null;
+    private ArrayList<ImageLoadTask> imageLoadTasks = null;
 
     public static RemoteDataManager getInstance() {
         if (instance != null) {
@@ -38,6 +42,7 @@ public class RemoteDataManager {
     private static final String ICON_URL = "http://openweathermap.org/img/w/%s.png";
 
     private JSONObject getJSON(Context context, String city) {
+        this.context = context;
         try {
             URL url = new URL(String.format(OPEN_WEATHER_MAP_API, city, context.getString(R.string.open_weather_maps_app_id)));
             HttpURLConnection connection =
@@ -71,7 +76,8 @@ public class RemoteDataManager {
 
     public ArrayList<WeatherModel> getFilledModel(Context context, String city) {
         final JSONObject json = getJSON(context, city);
-        ArrayList<WeatherModel> weatherList = new ArrayList<WeatherModel>();
+        weatherList = new ArrayList<WeatherModel>();
+        imageLoadTasks = new ArrayList<ImageLoadTask>();
         try {
             String foundCity = json.getJSONObject("city").getString("name").toUpperCase(Locale.US);
             String country = json.getJSONObject("city").getString("country");
@@ -100,8 +106,12 @@ public class RemoteDataManager {
                 setWeatherIcon(context, actualId, model);
                 model.setIconUrl(iconUrl);
                 model.setTemperature(temperature);
+                ImageLoadTask task = new ImageLoadTask(model);
+                task.execute();
+                imageLoadTasks.add(task);
                 weatherList.add(model);
             }
+            checkAllDataInModelWasFilled();
         } catch (Exception e) {
             Log.e("WeatherForecast", "One or more fields not found in the JSON data");
         }
@@ -136,6 +146,31 @@ public class RemoteDataManager {
             }
         }
         model.setIcon(icon);
+    }
+
+    private void checkAllDataInModelWasFilled() {
+        int delay = 0; // delay for 0 sec.
+        int period = 3000; // repeat every 3 sec.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            public void run()
+            {
+                int unfinishedTasks = 0;
+                for (ImageLoadTask task : imageLoadTasks) {
+                    if (!(task.getStatus() == AsyncTask.Status.FINISHED)) {
+                        unfinishedTasks++;
+                    }
+                }
+                if (unfinishedTasks == 1) {
+                    DatabaseManager manager = ((MainActivity) context).getDatabaseManager();
+                    if(manager != null) {
+                        manager.addDataToDatabase(weatherList);
+                    }
+                }
+            }
+        }, delay, period);
+
     }
 }
 

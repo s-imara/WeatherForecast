@@ -1,6 +1,7 @@
 package com.test.simara.weatherforecast;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,7 +41,7 @@ public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecy
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         viewHolder.txtViewTemp.setText(Utils.getTemperatureInC(models.get(position).getTemperature()));
-        new ImageLoadTask( models.get(position).getIconUrl(),viewHolder.imgViewIcon).execute();
+        viewHolder.imgViewIcon.setImageBitmap(models.get(position).getIconFromSite());
         viewHolder.txtViewDate.setText(Utils.dateToString(models.get(position).getDate()));
     }
 
@@ -63,7 +64,7 @@ public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecy
         public void onClick(View view) {
             int position = getLayoutPosition(); // gets item position
             WeatherModel model = models.get(position);
-            ((MainActivity)view.getContext()).getWeatherFragment().renderWeather(model);
+            ((MainActivity) view.getContext()).getWeatherFragment().renderWeather(model);
         }
     }
 

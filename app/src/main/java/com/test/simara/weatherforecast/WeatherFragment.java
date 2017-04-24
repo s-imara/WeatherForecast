@@ -65,18 +65,15 @@ public class WeatherFragment extends Fragment {
     }
 
     private void updateWeatherData(final String city) {
-
         new Thread() {
             public void run() {
                 final ArrayList<WeatherModel> weatherModels;
-                DatabaseManager manager =((MainActivity)getActivity()).getDatabaseManager();
+
                 if(isOnline()) {
                    weatherModels = RemoteDataManager.getInstance().getFilledModel(getActivity(), city);
-                    if(manager != null) {
-                        manager.addDataToDatabase(weatherModels);
-                    }
                 }
                 else {
+                    DatabaseManager manager =((MainActivity)getActivity()).getDatabaseManager();
                     if(manager != null) {
                         weatherModels = manager.getDataFromDb();
                     }
@@ -110,7 +107,7 @@ public class WeatherFragment extends Fragment {
                 "\n" + "Humidity: " + model.getHumidity() +
                 "\n" + "Pressure: " + model.getPressure());
         currentTemperatureField.setText(Utils.getTemperatureInC(model.getTemperature()));
-        updatedField.setText("Last update: " + model.getLastUpdated());
+        updatedField.setText("Last update: " + Utils.dateToString(model.getLastUpdated()));
         weatherIcon.setText(model.getIcon());
     }
 

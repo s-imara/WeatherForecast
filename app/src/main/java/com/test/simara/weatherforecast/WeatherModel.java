@@ -1,6 +1,9 @@
 package com.test.simara.weatherforecast;
 
+import android.graphics.Bitmap;
+
 import java.net.URL;
+import java.sql.Blob;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +25,8 @@ public class WeatherModel {
     private String icon;
     private URL iconUrl;
     private Date lastUpdated;
+
+    private Bitmap iconFromSite;
 
     public String getCity() {
         return city;
@@ -88,15 +93,22 @@ public class WeatherModel {
         this.icon = icon;
     }
 
+    public Bitmap getIconFromSite() {
+        return iconFromSite;
+    }
+
+    public void setIconFromSite(Bitmap iconFromSite) {
+        this.iconFromSite = iconFromSite;
+    }
     public Date getDate() {
         return this.date;
     }
 
     public void setDate(String dateString) {
         try {
-            setDate(new Date(Long.parseLong(dateString) * 1000));
+            setDate(new Date(Integer.parseInt(dateString)));
         } catch (Exception e) {
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                 setDate(inputFormat.parse(dateString));
             } catch (ParseException e2) {
