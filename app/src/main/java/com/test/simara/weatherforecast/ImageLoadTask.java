@@ -3,11 +3,9 @@ package com.test.simara.weatherforecast;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.widget.ImageView;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
  * Created by Simara on 22.04.2017.
@@ -16,7 +14,9 @@ import java.net.URL;
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
 private WeatherModel model;
-    public ImageLoadTask(WeatherModel model) {
+    private  WeatherRecyclerViewAdapter adapter;
+    public ImageLoadTask(WeatherModel model, WeatherRecyclerViewAdapter adapter) {
+        this.adapter = adapter;
         this.model = model;
     }
 
@@ -41,6 +41,8 @@ private WeatherModel model;
     @Override
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
+        if(adapter != null)
+        adapter.updateAdapter(model);
     }
 
 }

@@ -4,21 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.File;
-
-import android.text.format.DateFormat;
-import android.webkit.URLUtil;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -51,7 +42,7 @@ public class DatabaseManager {
             createQuery(query, ACTUAL_ID, "INTEGER", false);
             createQuery(query, CITY, "TEXT", false);
             createQuery(query, COUNTRY, "TEXT", false);
-            createQuery(query, DATE, "INTEGER", false);
+            createQuery(query, DATE, "INTEGER PRIMARY KEY", false);
             createQuery(query, TEMPERATURE, "INTEGER", false);
             createQuery(query, DESCRIPTION, "TEXT", false);
             createQuery(query, PRESSURE, "TEXT", false);
@@ -92,7 +83,13 @@ public class DatabaseManager {
                 values.put(LAST_UPDATE, Utils.dateToInt(models.get(i).getLastUpdated()));
                 try {
                     db.insertOrThrow(tableName, null, values);
-                } catch (SQLException ex) {
+                }
+                catch (SQLiteConstraintException ex){
+                    Log.e("DatabaseManager", ex.getMessage());
+                    db.insertWithOnConflict(tableName, null, values,SQLiteDatabase.CONFLICT_REPLACE);
+                }
+
+                catch (SQLException ex) {
                     Log.e("DatabaseManager", ex.getMessage());
                 }
             }
@@ -107,9 +104,14 @@ public class DatabaseManager {
         }
         for (int i = 0; i < 40; i++) {
             Date today = new Date(new Date().getTime());
-            today.setHours(today.getHours() + i * 3);
+            int dayNow =  today.getDay();
+            int hoursNow = today.getHours();
+            today.setHours(i * 3);
             today.setMinutes(0);
             today.setSeconds(0);
+            if (dayNow==today.getDay() && hoursNow > today.getHours()) {
+                continue;
+            }
             int d = Utils.dateToInt(today);
             String selectQuery = "SELECT  * FROM " + tableName + " WHERE " + DATE + " = " + d;
             Cursor cursor = db.rawQuery(selectQuery, null);
@@ -119,14 +121,14 @@ public class DatabaseManager {
                     model.setId(cursor.getInt(cursor.getColumnIndex(ACTUAL_ID)));
                     model.setCity(cursor.getString(cursor.getColumnIndex(CITY)));
                     model.setCountry(cursor.getString(cursor.getColumnIndex(COUNTRY)));
-                    model.setDate(new Date(cursor.getInt(cursor.getColumnIndex(DATE))));
+                    model.setDate(Utils.intToDate(cursor.getInt(cursor.getColumnIndex(DATE))));
                     model.setTemperature(cursor.getInt(cursor.getColumnIndex(TEMPERATURE)));
                     model.setDescription(cursor.getString(cursor.getColumnIndex(DESCRIPTION)));
                     model.setPressure(cursor.getString(cursor.getColumnIndex(PRESSURE)));
                     model.setHumidity(cursor.getString(cursor.getColumnIndex(HUMIDITY)));
                     model.setIcon(cursor.getString(cursor.getColumnIndex(ICON)));
                     model.setIconFromSite(Utils.byteArrayToBitmap(cursor.getBlob(cursor.getColumnIndex(ICON_FROM_SITE))));
-                    model.setLastUpdated(new Date(cursor.getInt(cursor.getColumnIndex(LAST_UPDATE))));
+                    model.setLastUpdated(Utils.intToDate((cursor.getInt(cursor.getColumnIndex(LAST_UPDATE)))));
                     models.add(model);
                 } while (cursor.moveToNext());
             }

@@ -3,11 +3,9 @@ package com.test.simara.weatherforecast;
 import android.graphics.Bitmap;
 
 import java.net.URL;
-import java.sql.Blob;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * Created by Simara on 22.04.2017.
@@ -106,7 +104,7 @@ public class WeatherModel {
 
     public void setDate(String dateString) {
         try {
-            setDate(new Date(Integer.parseInt(dateString)));
+            setDate(new Date(Long.parseLong(dateString)));
         } catch (Exception e) {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {

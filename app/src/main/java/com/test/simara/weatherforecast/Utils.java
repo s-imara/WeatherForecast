@@ -1,12 +1,10 @@
 package com.test.simara.weatherforecast;
 
-import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.format.DateFormat;
 
 import java.io.ByteArrayOutputStream;
-import java.sql.Blob;
 import java.util.Date;
 
 /**
@@ -24,7 +22,10 @@ public class Utils {
     }
 
     public static int dateToInt(Date date) {
-        return Math.round(date.getTime() / 1000);
+        return  (int) (date.getTime()/1000);
+    }
+    public static Date intToDate(int date){
+        return new Date(((long)date)*1000L);
     }
 
     public static byte[] bitmapToByteArray(Bitmap icon) {

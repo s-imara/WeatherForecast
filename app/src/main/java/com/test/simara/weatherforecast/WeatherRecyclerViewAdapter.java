@@ -1,17 +1,13 @@
 package com.test.simara.weatherforecast;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 
 /**
@@ -21,6 +17,7 @@ import java.util.ArrayList;
 public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecyclerViewAdapter.ViewHolder> {
     private ArrayList<WeatherModel> models;
     private Context context;
+    ViewHolder viewHolder;
 
     public WeatherRecyclerViewAdapter(ArrayList<WeatherModel> models) {
         this.models = models;
@@ -33,16 +30,18 @@ public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecy
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_layout, null);
         context = parent.getContext();
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        viewHolder = new ViewHolder(itemLayoutView);
         return viewHolder;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.txtViewTemp.setText(Utils.getTemperatureInC(models.get(position).getTemperature()));
-        viewHolder.imgViewIcon.setImageBitmap(models.get(position).getIconFromSite());
-        viewHolder.txtViewDate.setText(Utils.dateToString(models.get(position).getDate()));
+        if(viewHolder != null) {
+            viewHolder.txtViewTemp.setText(Utils.getTemperatureInC(models.get(position).getTemperature()));
+            viewHolder.imgViewIcon.setImageBitmap(models.get(position).getIconFromSite());
+            viewHolder.txtViewDate.setText(Utils.dateToString(models.get(position).getDate()));
+        }
     }
 
     // inner class to hold a reference to each item of RecyclerView
@@ -65,6 +64,21 @@ public class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecy
             int position = getLayoutPosition(); // gets item position
             WeatherModel model = models.get(position);
             ((MainActivity) view.getContext()).getWeatherFragment().renderWeather(model);
+        }
+    }
+public void updateAdapter(WeatherModel model){
+    if(models.contains(model)){
+        int pos =  models.indexOf(model);
+        models.get(pos).setIconFromSite(model.getIconFromSite());
+        this.onBindViewHolder(viewHolder,pos);
+    }
+}
+    public void updateAdapter(ArrayList<WeatherModel> weatherModels){
+        if(models !=null && weatherModels != null) {
+            for (int i = 0; i < models.size(); i++) {
+                models.get(i).setIconFromSite(weatherModels.get(i).getIconFromSite());
+                this.onBindViewHolder(viewHolder, i);
+            }
         }
     }
 

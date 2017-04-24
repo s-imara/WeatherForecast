@@ -1,4 +1,5 @@
 package com.test.simara.weatherforecast;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -24,8 +25,10 @@ public class RemoteDataManager {
 
     private static RemoteDataManager instance;
     private Context context;
-    private ArrayList<WeatherModel> weatherList = null;
+    private ArrayList<WeatherModel> weatherList;
     private ArrayList<ImageLoadTask> imageLoadTasks = null;
+    private WeatherRecyclerViewAdapter adapter;
+    private Timer timer;
 
     public static RemoteDataManager getInstance() {
         if (instance != null) {
@@ -75,6 +78,7 @@ public class RemoteDataManager {
     }
 
     public ArrayList<WeatherModel> getFilledModel(Context context, String city) {
+        timer = new Timer();
         final JSONObject json = getJSON(context, city);
         weatherList = new ArrayList<WeatherModel>();
         imageLoadTasks = new ArrayList<ImageLoadTask>();
@@ -106,7 +110,7 @@ public class RemoteDataManager {
                 setWeatherIcon(context, actualId, model);
                 model.setIconUrl(iconUrl);
                 model.setTemperature(temperature);
-                ImageLoadTask task = new ImageLoadTask(model);
+                ImageLoadTask task = new ImageLoadTask(model, adapter);
                 task.execute();
                 imageLoadTasks.add(task);
                 weatherList.add(model);
@@ -151,26 +155,29 @@ public class RemoteDataManager {
     private void checkAllDataInModelWasFilled() {
         int delay = 0; // delay for 0 sec.
         int period = 3000; // repeat every 3 sec.
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask()
-        {
-            public void run()
-            {
+
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
                 int unfinishedTasks = 0;
                 for (ImageLoadTask task : imageLoadTasks) {
                     if (!(task.getStatus() == AsyncTask.Status.FINISHED)) {
                         unfinishedTasks++;
                     }
                 }
-                if (unfinishedTasks == 1) {
+                if (unfinishedTasks == 0) {
                     DatabaseManager manager = ((MainActivity) context).getDatabaseManager();
-                    if(manager != null) {
+                    if (manager != null) {
                         manager.addDataToDatabase(weatherList);
+                        timer.cancel();
                     }
+                    return;
                 }
             }
         }, delay, period);
+    }
 
+    public void setAdapter(WeatherRecyclerViewAdapter adapter) {
+        this.adapter = adapter;
     }
 }
 

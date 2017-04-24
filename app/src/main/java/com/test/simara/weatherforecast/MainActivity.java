@@ -1,23 +1,20 @@
 package com.test.simara.weatherforecast;
 
-        import android.app.Fragment;
-        import android.content.DialogInterface;
-        import android.os.Bundle;
-        import android.support.v7.app.ActionBarActivity;
-        import android.support.v7.app.AlertDialog;
-        import android.support.v7.widget.DefaultItemAnimator;
-        import android.support.v7.widget.DividerItemDecoration;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.text.InputType;
-        import android.view.Menu;
-        import android.view.MenuInflater;
-        import android.view.MenuItem;
-        import android.view.View;
-        import android.widget.EditText;
-        import android.widget.Toast;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.EditText;
 
-        import java.util.ArrayList;
+import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
     DatabaseManager databaseManager = null;
@@ -42,6 +39,8 @@ public class MainActivity extends ActionBarActivity {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                 LinearLayoutManager.HORIZONTAL);
         recyclerView.addItemDecoration(dividerItemDecoration);
+        RemoteDataManager.getInstance().setAdapter(adapter);
+        adapter.updateAdapter(models);
     }
 
     @Override
