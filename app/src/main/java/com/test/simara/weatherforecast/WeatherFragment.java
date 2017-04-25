@@ -102,10 +102,10 @@ public class WeatherFragment extends Fragment {
         cityField.setText(model.getCity() + ", " + model.getCountry());
         dateField.setText(Utils.dateToString(model.getDate()));
         detailsField.setText(model.getDescription() +
-                "\n" + "Humidity: " + model.getHumidity() +
-                "\n" + "Pressure: " + model.getPressure());
+                "\n" + getActivity().getString(R.string.humidity) +": " + model.getHumidity() +
+                "\n" + getActivity().getString(R.string.pressure) +": " + model.getPressure());
         currentTemperatureField.setText(Utils.getTemperatureInC(model.getTemperature()));
-        updatedField.setText("Last update: " + Utils.dateToString(model.getLastUpdated()));
+        updatedField.setText(getActivity().getString(R.string.last_update) +": " + Utils.dateToString(model.getLastUpdated()));
         weatherIcon.setText(model.getIcon());
     }
 

@@ -13,5 +13,9 @@
     <string name="weather_thunder">&#xf01e;</string>
     <string name="weather_drizzle">&#xf01c;</string>
 
+    <string name="humidity">Humidity</string>
+    <string name="pressure">Pressure</string>
+    <string name="last_update">Last update</string>
+
     <string name="place_not_found">Sorry, no weather data found.</string>
 </resources>

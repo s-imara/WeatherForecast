@@ -3,6 +3,7 @@ package com.test.simara.weatherforecast;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+
 import java.util.Date;
 
 /**
@@ -12,23 +13,16 @@ import java.util.Date;
 public class DatabaseCleanupTask extends AsyncTask<Void, Void, Void> {
 
     private Context context;
-    private SQLiteDatabase db;
-    private String dbPath;
+    private DatabaseManager manager;
 
-    public DatabaseCleanupTask(Context context) {
+    public DatabaseCleanupTask(Context context, DatabaseManager manager) {
         this.context = context;
-        dbPath = context.getApplicationInfo().dataDir + "/databases/";
+        this.manager = manager;
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
-        if (db == null || !db.isOpen()) {
-            db = context.openOrCreateDatabase(dbPath + DatabaseManager.DB_NAME, Context.MODE_PRIVATE, null);
-        }
-        Date today = new Date(new Date().getTime());
-        int d = Utils.dateToInt(today);
-        String deleteQuery = DatabaseManager.DATE + " < " + d;
-        db.delete(DatabaseManager.TABLE_NAME, deleteQuery, null);
+        manager.cleanupDb();
         return null;
     }
 }

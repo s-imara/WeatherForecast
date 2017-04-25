@@ -30,7 +30,7 @@ public class MainActivity extends ActionBarActivity implements ModelChangeListen
                     .commit();
         }
         databaseManager = new DatabaseManager(this);
-        new DatabaseCleanupTask(this).execute();
+        new DatabaseCleanupTask(this, databaseManager).execute();
     }
 
     @Override
