@@ -1,6 +1,7 @@
 package com.test.simara.weatherforecast;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -12,7 +13,10 @@ import java.util.Date;
  */
 
 public class WeatherModel {
+    private static final String TAG = WeatherModel.class.getCanonicalName();
+
     private String city;
+    private String cityForSearch;
     private String country;
     private Date date;
     private int temperature;
@@ -32,6 +36,14 @@ public class WeatherModel {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getCityForSearch() {
+        return cityForSearch;
+    }
+
+    public void setCityForSearch(String cityForSearch) {
+        this.cityForSearch = cityForSearch;
     }
 
     public String getCountry() {
@@ -98,6 +110,7 @@ public class WeatherModel {
     public void setIconFromSite(Bitmap iconFromSite) {
         this.iconFromSite = iconFromSite;
     }
+
     public Date getDate() {
         return this.date;
     }
@@ -111,7 +124,7 @@ public class WeatherModel {
                 setDate(inputFormat.parse(dateString));
             } catch (ParseException e2) {
                 setDate(new Date()); // make the error somewhat obvious
-                e2.printStackTrace();
+                Log.e(TAG, e.getMessage());
             }
         }
     }

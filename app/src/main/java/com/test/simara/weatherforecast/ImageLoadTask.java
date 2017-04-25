@@ -3,6 +3,7 @@ package com.test.simara.weatherforecast;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -13,7 +14,10 @@ import java.net.HttpURLConnection;
 
 public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
 
-private WeatherModel model;
+    private static final String TAG = ImageLoadTask.class.getCanonicalName();
+
+    private WeatherModel model;
+
     public ImageLoadTask(WeatherModel model) {
         this.model = model;
     }
@@ -30,9 +34,9 @@ private WeatherModel model;
             model.setIconFromSite(iconFromSite);
             return iconFromSite;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             iconFromSite = model.getIconFromSite();
-         }
+        }
         return iconFromSite;
     }
 

@@ -72,7 +72,7 @@ public class WeatherFragment extends Fragment {
                 else {
                     DatabaseManager manager =((MainActivity)getActivity()).getDatabaseManager();
                     if(manager != null) {
-                        weatherModels = manager.getDataFromDb();
+                        weatherModels = manager.getDataFromDb(city);
                     }
                     else {
                         weatherModels = null;

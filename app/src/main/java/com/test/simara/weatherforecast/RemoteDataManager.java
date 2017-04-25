@@ -3,10 +3,8 @@ package com.test.simara.weatherforecast;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -21,6 +19,8 @@ import java.util.TimerTask;
  * Created by Simara on 21.04.2017.
  */
 public class RemoteDataManager {
+
+    private static final String TAG = RemoteDataManager.class.getCanonicalName();
 
     private static RemoteDataManager instance;
     private Context context;
@@ -69,11 +69,11 @@ public class RemoteDataManager {
             if (data.getInt("cod") != 200) {
                 return null;
             }
-
             return data;
         } catch (Exception e) {
-            return null;
+           Log.e(TAG,e.getMessage());
         }
+        return null;
     }
 
     public ArrayList<WeatherModel> getFilledModel(Context context, String city) {
@@ -98,6 +98,7 @@ public class RemoteDataManager {
                 String forecastDate = weatherArray.getJSONObject(i).getString("dt_txt");
                 int actualId = details.getInt("id");
                 URL iconUrl = new URL(String.format(ICON_URL, details.getString("icon")));
+                model.setCityForSearch(city);
                 model.setCity(foundCity);
                 model.setCountry(country);
                 model.setDescription(description);
@@ -116,7 +117,7 @@ public class RemoteDataManager {
             }
             checkAllDataInModelWasFilled();
         } catch (Exception e) {
-            Log.e("WeatherForecast", "One or more fields not found in the JSON data");
+            Log.e(TAG, "One or more fields not found in the JSON data");
         }
         return weatherList;
     }
@@ -164,7 +165,7 @@ public class RemoteDataManager {
                     }
                 }
                 if (unfinishedTasks == 0) {
-                    if(listener != null){
+                    if (listener != null) {
                         listener.onDataChanged(weatherList);
                     }
                     DatabaseManager manager = ((MainActivity) context).getDatabaseManager();
@@ -177,7 +178,8 @@ public class RemoteDataManager {
             }
         }, delay, period);
     }
-    public void setModelChangeListener(ModelChangeListener listener){
+
+    public void setModelChangeListener(ModelChangeListener listener) {
         this.listener = listener;
     }
 }

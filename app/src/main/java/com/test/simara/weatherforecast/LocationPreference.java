@@ -10,18 +10,17 @@ import android.content.SharedPreferences;
 public class LocationPreference {
     SharedPreferences prefs;
 
-    public LocationPreference(Activity activity){
+    public LocationPreference(Activity activity) {
         prefs = activity.getPreferences(Activity.MODE_PRIVATE);
     }
 
     // If the user has not chosen a city yet, return
-    // Sydney as the default city
-    String getCity(){
-        return prefs.getString("city",  "Zaporizhzhya,ua");
+    // Zaporizhzhya as the default city
+    public String getCity() {
+        return prefs.getString("city", "Zaporizhzhya");
     }
 
-    void setCity(String city){
+    public void setCity(String city) {
         prefs.edit().putString("city", city).commit();
     }
-
 }

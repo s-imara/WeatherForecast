@@ -2,7 +2,6 @@ package com.test.simara.weatherforecast;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements ModelChangeListener {
@@ -32,6 +30,7 @@ public class MainActivity extends ActionBarActivity implements ModelChangeListen
                     .commit();
         }
         databaseManager = new DatabaseManager(this);
+        new DatabaseCleanupTask(this).execute();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.test.simara.weatherforecast;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
